@@ -9,9 +9,13 @@ def home():
         url = "https://api.coindesk.com/v1/bpi/currentprice.json"
 
         r = requests.get(url, timeout=10)
+
+        if r.status_code != 200:
+            return jsonify({"error": "API status " + str(r.status_code)})
+
         data = r.json()
 
-        price = data["bpi"]["USD"]["rate"]
+        price = data.get("bpi", {}).get("USD", {}).get("rate", "No Data")
 
         return jsonify({
             "symbol": "BTCUSD",
