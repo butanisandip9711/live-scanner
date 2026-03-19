@@ -6,21 +6,23 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     try:
-        url = "https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v7/finance/quote?symbols=RELIANCE.NS,TCS.NS,INFY.NS"
-
-        r = requests.get(url, timeout=15)
-
-        data = r.json()
-
-        result = data.get("quoteResponse", {}).get("result", [])
+        symbols = ["RELIANCE.NS","TCS.NS","INFY.NS"]
 
         stocks = []
 
-        for s in result:
+        for sym in symbols:
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}"
+
+            r = requests.get(url, timeout=10)
+            data = r.json()
+
+            result = data["chart"]["result"][0]
+
+            price = result["meta"]["regularMarketPrice"]
+
             stocks.append({
-                "symbol": s.get("symbol"),
-                "price": s.get("regularMarketPrice"),
-                "change": s.get("regularMarketChangePercent")
+                "symbol": sym,
+                "price": price
             })
 
         return jsonify(stocks)
