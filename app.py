@@ -1,42 +1,22 @@
 from flask import Flask, jsonify
 import requests
+import os
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    try:
-        symbols = ["RELIANCE.NS", "TCS.NS", "INFY.NS"]
+    url = "https://yahoo-finance15.p.rapidapi.com/api/yahoo/qu/quote/RELIANCE.NS"
 
-        stocks = []
+    headers = {
+        "X-RapidAPI-Key": os.environ.get("RAPIDAPI_KEY"),
+        "X-RapidAPI-Host": os.environ.get("RAPIDAPI_HOST")
+    }
 
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
+    r = requests.get(url, headers=headers)
 
-        for sym in symbols:
-            url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={sym}"
+    data = r.json()
 
-            r = requests.get(url, headers=headers, timeout=10)
+    return jsonify(data)
 
-            if r.status_code != 200:
-                continue
-
-            data = r.json()
-
-            result = data.get("quoteResponse", {}).get("result", [])
-
-            if not result:
-                continue
-
-            price = result[0].get("regularMarketPrice")
-
-            stocks.append({
-                "symbol": sym,
-                "price": price
-            })
-
-        return jsonify(stocks)
-
-    except Exception as e:
-        return jsonify({"error": str(e)})
+app.run(host="0.0.0.0", port=10000)
