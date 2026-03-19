@@ -6,14 +6,19 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    url = "https://yahoo-finance15.p.rapidapi.com/api/yahoo/qu/quote/RELIANCE.NS"
+
+    symbols = ["RELIANCE.NS","TCS.NS","INFY.NS"]
+
+    url = "https://yahoo-finance15.p.rapidapi.com/api/yahoo/qu/quote"
+
+    querystring = {"symbol": ",".join(symbols)}
 
     headers = {
         "X-RapidAPI-Key": os.environ.get("RAPIDAPI_KEY"),
         "X-RapidAPI-Host": os.environ.get("RAPIDAPI_HOST")
     }
 
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, params=querystring)
 
     data = r.json()
 
