@@ -6,20 +6,30 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     try:
-        url = "https://api.coindesk.com/v1/bpi/currentprice.json"
+        url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=RELIANCE.NS"
 
-        r = requests.get(url, timeout=10)
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
+
+        r = requests.get(url, headers=headers, timeout=10)
 
         if r.status_code != 200:
-            return jsonify({"error": "API status " + str(r.status_code)})
+            return jsonify({"error": "API Status " + str(r.status_code)})
 
         data = r.json()
 
-        price = data.get("bpi", {}).get("USD", {}).get("rate", "No Data")
+        result = data.get("quoteResponse", {}).get("result", [])
+
+        if not result:
+            return jsonify({"error": "No Data"})
+
+        stock = result[0]
 
         return jsonify({
-            "symbol": "BTCUSD",
-            "price": price
+            "symbol": stock.get("symbol"),
+            "price": stock.get("regularMarketPrice"),
+            "change": stock.get("regularMarketChangePercent")
         })
 
     except Exception as e:
