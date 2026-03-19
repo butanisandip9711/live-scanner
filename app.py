@@ -6,13 +6,9 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     try:
-        url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=RELIANCE.NS,TCS.NS,INFY.NS"
+        url = "https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v7/finance/quote?symbols=RELIANCE.NS,TCS.NS,INFY.NS"
 
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
-
-        r = requests.get(url, headers=headers, timeout=10)
+        r = requests.get(url, timeout=15)
 
         data = r.json()
 
@@ -31,4 +27,3 @@ def home():
 
     except Exception as e:
         return jsonify({"error": str(e)})
-
