@@ -1,27 +1,28 @@
 from flask import Flask, jsonify
 import requests
-import os
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
 
-    symbols = ["RELIANCE.NS","TCS.NS","INFY.NS"]
+    stocks = ["RELIANCE", "TCS", "INFY"]
 
-    url = "https://yahoo-finance15.p.rapidapi.com/api/yahoo/qu/quote"
+    result = []
 
-    querystring = {"symbol": ",".join(symbols)}
+    for s in stocks:
 
-    headers = {
-        "X-RapidAPI-Key": os.environ.get("RAPIDAPI_KEY"),
-        "X-RapidAPI-Host": os.environ.get("RAPIDAPI_HOST")
-    }
+        url = f"https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/{s}"
 
-    r = requests.get(url, headers=headers, params=querystring)
+        r = requests.get(url).json()
 
-    data = r.json()
+        result.append({
+            "symbol": s,
+            "price": r["data"]["pricecurrent"],
+            "change": r["data"]["pricechange"]
+        })
 
-    return jsonify(data)
+    return jsonify(result)
 
+app.run(host="0.0.0.0", port=10000)
 app.run(host="0.0.0.0", port=10000)
