@@ -6,23 +6,28 @@ app = Flask(__name__)
 @app.route("/")
 def home():
 
-    stocks = ["RELIANCE", "TCS", "INFY"]
+    symbols = [
+        "RELIANCE",
+        "TCS",
+        "INFY"
+    ]
 
-    result = []
+    data_list = []
 
-    for s in stocks:
+    for s in symbols:
 
-        url = f"https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/{s}"
+        url = f"https://priceapi.moneycontrol.com/techCharts/indianMarket/stock/history?symbol={s}&resolution=1D&from=1680000000&to=1890000000"
 
         r = requests.get(url).json()
 
-        result.append({
+        price = r["c"][-1]
+
+        data_list.append({
             "symbol": s,
-            "price": r["data"]["pricecurrent"],
-            "change": r["data"]["pricechange"]
+            "price": price
         })
 
-    return jsonify(result)
+    return jsonify(data_list)
 
-app.run(host="0.0.0.0", port=10000)
+
 app.run(host="0.0.0.0", port=10000)
