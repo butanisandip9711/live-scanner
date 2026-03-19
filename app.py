@@ -18,7 +18,11 @@ def home():
     result = []
 
     for s in data["quoteResponse"]["result"]:
-        result.append({"symbol": s["symbol"], "price": s["regularMarketPrice"], "change": s["regularMarketChangePercent"]})
+        result.append({
+            "symbol": s["symbol"],
+            "price": s["regularMarketPrice"],
+            "change": s["regularMarketChangePercent"]
+        })
 
     return jsonify(result)
 
