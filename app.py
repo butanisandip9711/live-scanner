@@ -6,19 +6,30 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     try:
-        symbols = ["RELIANCE.NS","TCS.NS","INFY.NS"]
+        symbols = ["RELIANCE.NS", "TCS.NS", "INFY.NS"]
 
         stocks = []
 
-        for sym in symbols:
-            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}"
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
 
-            r = requests.get(url, timeout=10)
+        for sym in symbols:
+            url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={sym}"
+
+            r = requests.get(url, headers=headers, timeout=10)
+
+            if r.status_code != 200:
+                continue
+
             data = r.json()
 
-            result = data["chart"]["result"][0]
+            result = data.get("quoteResponse", {}).get("result", [])
 
-            price = result["meta"]["regularMarketPrice"]
+            if not result:
+                continue
+
+            price = result[0].get("regularMarketPrice")
 
             stocks.append({
                 "symbol": sym,
