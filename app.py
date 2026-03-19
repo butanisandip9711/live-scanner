@@ -6,28 +6,21 @@ app = Flask(__name__)
 @app.route("/")
 def home():
 
-    symbols = [
-        "RELIANCE",
-        "TCS",
-        "INFY"
-    ]
+    url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=RELIANCE.NS,TCS.NS,INFY.NS"
 
-    data_list = []
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
 
-    for s in symbols:
+    r = requests.get(url, headers=headers)
+    data = r.json()
 
-        url = f"https://priceapi.moneycontrol.com/techCharts/indianMarket/stock/history?symbol={s}&resolution=1D&from=1680000000&to=1890000000"
+    result = []
 
-        r = requests.get(url).json()
+    for s in data["quoteResponse"]["result"]:
+        result.append({"symbol": s["symbol"], "price": s["regularMarketPrice"], "change": s["regularMarketChangePercent"]})
 
-        price = r["c"][-1]
-
-        data_list.append({
-            "symbol": s,
-            "price": price
-        })
-
-    return jsonify(data_list)
+    return jsonify(result)
 
 
 app.run(host="0.0.0.0", port=10000)
