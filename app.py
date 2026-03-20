@@ -1,7 +1,7 @@
-import time
+from flask import Flask
 
-print("LIVE SCANNER STARTED")
+app = Flask(__name__)
 
-while True:
-    print("Scanning Market...")
-    time.sleep(5)
+@app.route("/")
+def home():
+    return "LIVE SCANNER RUNNING"
