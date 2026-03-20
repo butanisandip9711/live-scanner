@@ -1,34 +1,14 @@
-from flask import Flask, jsonify
-import requests
+from SmartApi import SmartConnect
+import pyotp
 
-app = Flask(__name__)
+api_key = "eCZzvAKp"
+client_code = "S54936548"
+password = "9030"
+totp_secret = "HY5MERGF2HABP7KYB43AH2SSMU"
 
-@app.route("/")
-def home():
-    try:
-        url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=RELIANCE.NS,TCS.NS,INFY.NS"
+totp = pyotp.TOTP(totp_secret).now()
 
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
+obj = SmartConnect(api_key=api_key)
+session = obj.generateSession(client_code, password, totp)
 
-        r = requests.get(url, headers=headers, timeout=10)
-        data = r.json()
-
-        result = []
-
-        for s in data.get("quoteResponse", {}).get("result", []):
-            result.append({
-                "symbol": s.get("symbol"),
-                "price": s.get("regularMarketPrice"),
-                "change": s.get("regularMarketChangePercent")
-            })
-
-        return jsonify(result)
-
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+print("Angel Login Success")
